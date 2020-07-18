@@ -1,3 +1,5 @@
+import random
+import requests
 import discord
 from discord.ext import commands
 import asyncio
@@ -10,24 +12,38 @@ statuses = ['Stat1', 'Stat2', 'Stat3']
 @client.event
 async def on_ready():
     print('Logged on as', client.user)
-    await client.change_presence(activity=discord.Game(name='Pinturillo 3: El desenlace'))
+    await client.change_presence(activity=discord.Game(name='Pinturillo 3: El desenlace'), status=discord.Status.dnd)
 
 
-@client.event
-async def on_message(message):
-    # don't respond to ourselves
+@client.command()
+async def ping(message):
     if message.author == client.user:
         return
+    await message.send('pong')
 
-    if message.content[1:] == 'ping':
-        await message.channel.send('pong')
+
+@client.command(aliases=['8ball'])
+async def _8ball(ctx, *, question):
+    responses = ['Yes', 'No', 'Try Again']
+    await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
+
+
+@client.command(aliases=['poeUnique'])
+async def poe_unique(ctx, *, item_name):
+    print(item_name)
+    poe_wiki_api = 'https://pathofexile.gamepedia.com/api.php?action=cargoquery&tables=items&fields=name&where=rarity' \
+                   f'="Unique" AND name LIKE "%{item_name}%"&group_by=name&format=json'
+    await ctx.message.add_reaction('❗')
+    r = requests.get(poe_wiki_api)
+    print(r.content)
+    await ctx.message.remove_reaction('❗', client.user)
 
 
 @client.event
 async def on_reaction_add(reaction, user):
     print(reaction)
     print(user)
-    if reaction.message.author != client.user:
+    if user != client.user:
         await reaction.message.add_reaction(reaction)
     return
 
@@ -36,7 +52,7 @@ async def on_reaction_add(reaction, user):
 async def on_reaction_remove(reaction, user):
     print(reaction)
     print(user)
-    if reaction.message.author != client.user:
+    if user != client.user:
         await reaction.message.remove_reaction(reaction, client.user)
     return
 
