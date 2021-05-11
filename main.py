@@ -42,6 +42,13 @@ async def _8ball(ctx, *, question):
     await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
 
 
+@client.command(pass_context=True)
+async def clear(ctx, amount):
+    channel = ctx.message.channel
+    async for message in channel.history(limit=int(amount)):
+        await message.delete()
+
+
 @client.event
 async def on_reaction_add(reaction, user):
     print(reaction)
@@ -72,7 +79,7 @@ async def on_reaction_remove(reaction, user):
 
 # client.loop.create_task(change_status())
 
-token = open('token.txt', 'r')
+token = open('token', 'r')
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         client.load_extension(f'cogs.{filename[:-3]}')
