@@ -10,7 +10,7 @@ statuses = ['Stat1', 'Stat2', 'Stat3']
 @client.event
 async def on_ready():
     print('Logged on as', client.user)
-    await client.change_presence(activity=discord.Game(name='Pinturillo 3: El desenlace'), status=discord.Status.dnd)
+    await client.change_presence(activity=discord.Game(name='WIP'), status=discord.Status.dnd)
 
 
 @client.command()

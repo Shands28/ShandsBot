@@ -26,17 +26,22 @@ class Poe(commands.Cog):
         print(item_name)
         await ctx.message.add_reaction('🔄')
         result = db.Uniques.find({"name": {"$regex": item_name, "$options": 'i'}})
-        for x in result:
-            print(x)
-        embed = discord.Embed(
-            title=f"{result.count()} unique{'s' if result.count() > 1 else ''} found",
-            description='',
-            colour=discord.Colour.blurple()
-        )
-        embed.set_thumbnail(url='https://gamepedia.cursecdn.com/pathofexile_gamepedia/thumb/1/12/Path_of_Exile_logo.png'
-                                '/300px-Path_of_Exile_logo.png?version=22e4fb4a0345ac18d6b6cdafb9cc335a')
         await ctx.message.remove_reaction('🔄', self.client.user)
-        await ctx.send(embed=embed)
+        if result.count() == 0:
+            ctx.send("No uniques found.")
+        else:
+            unique_names_list = ""
+            for index, unique in enumerate(result):
+                unique_names_list += f"{index + 1}. {unique['name']}\n"
+            embed = discord.Embed(
+                title=f"{result.count()} unique{'s' if result.count() > 1 else ''} item found :large_orange_diamond:",
+                description=unique_names_list,
+                colour=discord.Colour.blurple()
+            )
+            embed.set_thumbnail(
+                url='https://gamepedia.cursecdn.com/pathofexile_gamepedia/thumb/1/12/Path_of_Exile_logo.png'
+                    '/300px-Path_of_Exile_logo.png?version=22e4fb4a0345ac18d6b6cdafb9cc335a')
+            await ctx.send(embed=embed)
 
 
 def setup(client):
